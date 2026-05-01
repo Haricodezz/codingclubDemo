@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BPMCE Coding Club</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4ff;color:#1e293b;min-height:100vh}
+:root{--blue:#2563eb;--indigo:#4338ca;--dark:#1e293b;--muted:#64748b;--light:#f8fafc;--border:#e2e8f0;--card:#fff;--grad:linear-gradient(135deg,#2563eb,#4338ca)}
+.app{display:flex;min-height:100vh}
+/* Sidebar */
+.sidebar{width:220px;background:var(--grad);color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh;z-index:100;overflow-y:auto}
+.sidebar-logo{padding:20px 16px 12px;border-bottom:1px solid rgba(255,255,255,0.15)}
+.logo-icon{width:40px;height:40px;background:rgba(255,255,255,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:8px}
+.logo-title{font-size:13px;font-weight:700;line-height:1.3}
+.logo-sub{font-size:10px;opacity:0.7;margin-top:2px}
+.nav-section{padding:12px 0}
+.nav-label{font-size:10px;font-weight:600;opacity:0.5;padding:0 16px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:13px;transition:background 0.15s;border-radius:0}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,0.18)}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+/* Main */
+.main{margin-left:220px;flex:1;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:15px;font-weight:600;color:var(--dark)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.content{padding:24px}
+/* Cards */
+.card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:20px;margin-bottom:16px}
+.card-sm{background:#fff;border-radius:10px;border:1px solid var(--border);padding:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+/* Hero */
+.hero{background:var(--grad);border-radius:16px;padding:40px 32px;color:#fff;margin-bottom:24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.08)}
+.hero-tag{display:inline-block;background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:12px;margin-bottom:12px}
+.hero h1{font-size:26px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.hero p{font-size:14px;opacity:0.85;max-width:500px;line-height:1.6}
+.hero-btns{display:flex;gap:10px;margin-top:20px}
+.btn{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
+.btn-white{background:#fff;color:var(--blue)}
+.btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.6)}
+.btn-primary{background:var(--grad);color:#fff}
+.btn-outline-dark{background:#fff;color:var(--blue);border:1.5px solid var(--border)}
+/* Stat cards */
+.stat-card{background:#fff;border-radius:10px;border:1px solid var(--border);padding:16px;text-align:center}
+.stat-num{font-size:28px;font-weight:700;color:var(--blue)}
+.stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+.stat-change{font-size:11px;color:#10b981;margin-top:2px}
+/* Badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-blue{background:#dbeafe;color:#1d4ed8}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-red{background:#fee2e2;color:#991b1b}
+.badge-purple{background:#ede9fe;color:#5b21b6}
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;background:#f8fafc;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:0.04em}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--dark)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+/* Section title */
+.section-title{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:16px}
+.section-sub{font-size:13px;color:var(--muted);margin-top:2px;font-weight:400}
+/* Progress bar */
+.progress-bg{background:#e2e8f0;border-radius:4px;height:6px;margin-top:8px}
+.progress-fill{height:6px;border-radius:4px;background:var(--grad)}
+/* IDE */
+.ide-area{background:#0f172a;border-radius:10px;padding:16px;font-family:monospace;font-size:13px;color:#e2e8f0;min-height:200px;line-height:1.6}
+.ide-header{background:#1e293b;border-radius:10px 10px 0 0;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.ide-dot{width:10px;height:10px;border-radius:50%}
+/* Timeline */
+.timeline-item{display:flex;gap:16px;margin-bottom:16px}
+.timeline-dot{width:36px;height:36px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+/* Team card */
+.team-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:20px;text-align:center}
+.team-avatar{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff}
+/* Course card */
+.course-card{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:box-shadow 0.15s}
+.course-card:hover{box-shadow:0 4px 20px rgba(37,99,235,0.12)}
+.course-thumb{height:100px;display:flex;align-items:center;justify-content:center;font-size:36px}
+.course-body{padding:16px}
+/* Event card */
+.event-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:16px;display:flex;gap:16px;align-items:flex-start}
+.event-date{background:var(--grad);color:#fff;border-radius:10px;padding:8px 12px;text-align:center;min-width:56px;flex-shrink:0}
+.event-day{font-size:22px;font-weight:700;line-height:1}
+.event-month{font-size:11px;opacity:0.85}
+/* Resource */
+.resource-card{background:#fff;border-radius:12px;border:1px solid var(--border);padding:20px;cursor:pointer;transition:box-shadow 0.15s}
+.resource-card:hover{box-shadow:0 4px 20px rgba(37,99,235,0.1)}
+.resource-icon{font-size:28px;margin-bottom:10px}
+/* Charts mock */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:100px;padding-top:10px}
+.bar{flex:1;border-radius:4px 4px 0 0;background:var(--grad);opacity:0.8;min-width:20px;transition:opacity 0.2s}
+.bar:hover{opacity:1}
+/* Responsive */
+@media(max-width:768px){.sidebar{width:60px}.main{margin-left:60px}.logo-title,.logo-sub,.nav-item span{display:none}.grid3,.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {useState,createElement:h,Fragment}=React;
+
+const pages=[
+  {id:'home',label:'Home',icon:'🏠'},
+  {id:'about',label:'About',icon:'ℹ️'},
+  {id:'courses',label:'Learning',icon:'📚'},
+  {id:'ide',label:'Online IDE',icon:'💻'},
+  {id:'anticheat',label:'Anti-Cheat',icon:'🛡️'},
+  {id:'events',label:'Events',icon:'📅'},
+  {id:'leaderboard',label:'Leaderboard',icon:'🏆'},
+  {id:'resources',label:'Resources',icon:'📦'},
+  {id:'admin',label:'Admin',icon:'⚙️'},
+  {id:'contact',label:'Contact',icon:'✉️'},
+];
+
+const members=[
+  {name:'Hari Prakash Yadav',role:'Full Stack Developer',avatar:'HY',color:'#2563eb'},
+  {name:'Md Ikramul Ansari',role:'Backend Developer',avatar:'IA',color:'#4338ca'},
+  {name:'Sujeet Kumar',role:'Faculty Coordinator (Asst. Prof.)',avatar:'SK',color:'#0891b2'},
+  {name:'Priya Singh',role:'Frontend Developer',avatar:'PS',color:'#7c3aed'},
+  {name:'Rahul Kumar',role:'ML Engineer',avatar:'RK',color:'#059669'},
+  {name:'Aditya Verma',role:'DevOps Engineer',avatar:'AV',color:'#dc2626'},
+];
+
+const courses=[
+  {title:'HTML & CSS Basics',level:'Beginner',icon:'🌐',lessons:12,color:'#fee2e2',students:145},
+  {title:'JavaScript Essentials',level:'Beginner',icon:'⚡',lessons:18,color:'#fef3c7',students:128},
+  {title:'Python Programming',level:'Beginner',icon:'🐍',lessons:20,color:'#d1fae5',students:112},
+  {title:'Data Structures & Algo',level:'Intermediate',icon:'🧠',lessons:30,color:'#dbeafe',students:87},
+  {title:'React Development',level:'Intermediate',icon:'⚛️',lessons:22,color:'#ede9fe',students:64},
+  {title:'Machine Learning',level:'Advanced',icon:'🤖',lessons:25,color:'#e0e7ff',students:43},
+];
+
+const events=[
+  {day:'12',month:'Jun',title:'Hackathon 2025',desc:'48-hour coding sprint. Build something amazing!',type:'Hackathon'},
+  {day:'18',month:'Jun',title:'DSA Workshop',desc:'Data Structures and Algorithms hands-on session',type:'Workshop'},
+  {day:'25',month:'Jun',title:'Web Dev Bootcamp',desc:'Full-stack development intensive with React & Node',type:'Bootcamp'},
+  {day:'05',month:'Jul',title:'AI/ML Seminar',desc:'Introduction to machine learning concepts',type:'Seminar'},
+  {day:'15',month:'Jul',title:'Open Source Day',desc:'Contribute to open source projects together',type:'Event'},
+];
+
+const leaders=[
+  {rank:1,name:'Hari Prakash Yadav',pts:2840,solved:142,streak:21,badge:'Gold'},
+  {rank:2,name:'Priya Singh',pts:2710,solved:136,streak:18,badge:'Gold'},
+  {rank:3,name:'Md Ikramul Ansari',pts:2580,solved:129,streak:15,badge:'Silver'},
+  {rank:4,name:'Rahul Kumar',pts:2340,solved:117,streak:12,badge:'Silver'},
+  {rank:5,name:'Aditya Verma',pts:2100,solved:105,streak:9,badge:'Bronze'},
+  {rank:6,name:'Sneha Patel',pts:1980,solved:99,streak:7,badge:'Bronze'},
+  {rank:7,name:'Amit Sharma',pts:1760,solved:88,streak:5,badge:''},
+  {rank:8,name:'Deepak Jha',pts:1540,solved:77,streak:3,badge:''},
+];
+
+const resources=[
+  {title:'Video Tutorials',icon:'🎬',desc:'Curated YouTube playlists for all topics',count:'250+ videos'},
+  {title:'E-Books & PDFs',icon:'📄',desc:'Textbooks and reference material downloads',count:'80+ books'},
+  {title:'Practice Problems',icon:'🧩',desc:'LeetCode, HackerRank problem sets',count:'500+ problems'},
+  {title:'Cheat Sheets',icon:'📋',desc:'Quick reference guides for languages',count:'30+ sheets'},
+  {title:'Project Ideas',icon:'💡',desc:'Mini & major project inspiration bank',count:'100+ ideas'},
+  {title:'Interview Prep',icon:'🎯',desc:'Technical interview questions & answers',count:'200+ Q&A'},
+];
+
+function Sidebar({page,setPage}){
+  return h('div',{className:'sidebar'},
+    h('div',{className:'sidebar-logo'},
+      h('div',{className:'logo-icon'},'💻'),
+      h('div',{className:'logo-title'},'BPMCE'),
+      h('div',{className:'logo-sub'},'Coding Club')
+    ),
+    h('div',{className:'nav-section'},
+      h('div',{className:'nav-label'},'Navigation'),
+      pages.map(p=>h('div',{
+        key:p.id,
+        className:'nav-item'+(page===p.id?' active':''),
+        onClick:()=>setPage(p.id)
+      },
+        h('span',{className:'nav-icon'},p.icon),
+        h('span',null,p.label)
+      ))
+    )
+  );
+}
+
+function Topbar({title}){
+  return h('div',{className:'topbar'},
+    h('div',{className:'topbar-title'},title),
+    h('div',{className:'topbar-right'},
+      h('span',{style:{fontSize:'12px',color:'#64748b'}},'Welcome, Admin'),
+      h('div',{className:'avatar'},'AD')
+    )
+  );
+}
+
+// HOME
+function Home({setPage}){
+  return h(Fragment,null,
+    h(Topbar,{title:'BPMCE Coding Club — Dashboard'}),
+    h('div',{className:'content'},
+      h('div',{className:'hero'},
+        h('div',{className:'hero-tag'},'🎓 B.P. Mandal College of Engineering'),
+        h('h1',null,'Welcome to BPMCE Coding Club'),
+        h('p',null,'Empowering students through competitive programming, open-source contributions, and tech innovation. Build. Learn. Compete.'),
+        h('div',{className:'hero-btns'},
+          h('button',{className:'btn btn-white',onClick:()=>setPage('courses')},'Start Learning'),
+          h('button',{className:'btn btn-outline',onClick:()=>setPage('events')},'View Events')
+        )
+      ),
+      h('div',{className:'grid4',style:{marginBottom:'24px'}},
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'342'),h('div',{className:'stat-label'},'Active Members'),h('div',{className:'stat-change'},'↑ 12% this month')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'28'),h('div',{className:'stat-label'},'Events Held'),h('div',{className:'stat-change'},'↑ 4 new upcoming')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'6'),h('div',{className:'stat-label'},'Active Courses'),h('div',{className:'stat-change'},'↑ 2 added this week')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'1.2K'),h('div',{className:'stat-label'},'Problems Solved'),h('div',{className:'stat-change'},'↑ 89 today'))
+      ),
+      h('div',{className:'grid2'},
+        h('div',{className:'card'},
+          h('div',{className:'section-title'},'Upcoming Events'),
+          events.slice(0,3).map(e=>h('div',{key:e.title,style:{display:'flex',alignItems:'center',gap:'12px',padding:'10px 0',borderBottom:'1px solid var(--border)'}},
+            h('div',{style:{background:'var(--grad)',borderRadius:'8px',padding:'6px 10px',color:'#fff',textAlign:'center',minWidth:'44px'}},
+              h('div',{style:{fontSize:'16px',fontWeight:'700',lineHeight:'1'}},e.day),
+              h('div',{style:{fontSize:'10px'}},e.month)
+            ),
+            h('div',null,
+              h('div',{style:{fontSize:'13px',fontWeight:'600'}},e.title),
+              h('div',{style:{fontSize:'12px',color:'var(--muted)'}},e.type)
+            )
+          ))
+        ),
+        h('div',{className:'card'},
+          h('div',{className:'section-title'},'Top Performers'),
+          leaders.slice(0,5).map((l,i)=>h('div',{key:l.name,style:{display:'flex',alignItems:'center',gap:'12px',padding:'8px 0',borderBottom:'1px solid var(--border)'}},
+            h('div',{style:{width:'24px',fontWeight:'700',color:i<3?'var(--blue)':'var(--muted)',fontSize:'13px'}},l.rank),
+            h('div',{style:{flex:1,fontSize:'13px',fontWeight:'500'}},l.name),
+            h('div',{className:'badge badge-blue'},l.pts+' pts')
+          ))
+        )
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'section-title'},'Our Team'),
+        h('div',{className:'grid3'},
+          members.map(m=>h('div',{key:m.name,className:'team-card'},
+            h('div',{className:'team-avatar',style:{background:m.color}},m.avatar),
+            h('div',{style:{fontWeight:'600',fontSize:'14px'}},m.name),
+            h('div',{style:{fontSize:'12px',color:'var(--muted)',marginTop:'4px'}},m.role)
+          ))
+        )
+      )
+    )
+  );
+}
+
+// ABOUT
+function About(){
+  return h(Fragment,null,
+    h(Topbar,{title:'About the Club'}),
+    h('div',{className:'content'},
+      h('div',{className:'card'},
+        h('div',{className:'section-title'},'Our Mission'),
+        h('p',{style:{fontSize:'14px',color:'var(--muted)',lineHeight:'1.8'}},
+          'BPMCE Coding Club is dedicated to fostering a culture of innovation and technical excellence at B.P. Mandal College of Engineering, Madhepura. We provide students with resources, mentorship, and a collaborative environment to grow as software engineers.'
+        ),
+        h('div',{style:{marginTop:'20px',display:'flex',gap:'12px',flexWrap:'wrap'}},
+          ['Competitive Programming','Open Source','Web Development','AI & ML','Cloud Computing','Cybersecurity'].map(tag=>
+            h('span',{key:tag,className:'badge badge-blue',style:{fontSize:'12px',padding:'6px 14px'}},tag)
+          )
+        )
+      ),
+      h('div',{className:'grid3',style:{marginBottom:'16px'}},
+        [
+          {icon:'🏆',title:'Competitive Programming',desc:'Weekly contests, LeetCode sessions, and ICPC preparation'},
+          {icon:'🌐',title:'Web Development',desc:'Full-stack development workshops from basics to deployment'},
+          {icon:'🤖',title:'AI & Machine Learning',desc:'Python, data science, and ML model building sessions'},
+        ].map(f=>h('div',{key:f.title,className:'card'},
+          h('div',{style:{fontSize:'32px',marginBottom:'10px'}},f.icon),
+          h('div',{style:{fontWeight:'700',marginBottom:'6px'}},f.title),
+          h('div',{style:{fontSize:'13px',color:'var(--muted)',lineHeight:'1.6'}},f.desc)
+        ))
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'section-title'},'Faculty Coordinator'),
+        h('div',{style:{display:'flex',alignItems:'center',gap:'20px'}},
+          h('div',{style:{width:'80px',height:'80px',borderRadius:'50%',background:'var(--grad)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'28px',fontWeight:'700',flexShrink:0}},'SK'),
+          h('div',null,
+            h('div',{style:{fontSize:'18px',fontWeight:'700'}},'Sujeet Kumar'),
+            h('div',{style:{fontSize:'13px',color:'var(--blue)',marginTop:'4px'}},'Assistant Professor'),
+            h('div',{style:{fontSize:'13px',color:'var(--muted)',marginTop:'4px'}},'Department of Computer Science & Engineering'),
+            h('div',{style:{fontSize:'13px',color:'var(--muted)'}},'B.P. Mandal College of Engineering, Madhepura')
+          )
+        )
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'section-title'},'Developers'),
+        h('div',{className:'grid2'},
+          [
+            {name:'Hari Prakash Yadav',role:'Full Stack Developer',init:'HY',color:'#2563eb',skills:['React','Node.js','MongoDB','Python']},
+            {name:'Md Ikramul Ansari',role:'Backend Developer',init:'IA',color:'#4338ca',skills:['Django','PostgreSQL','REST APIs','Docker']},
+          ].map(d=>h('div',{key:d.name,className:'card-sm',style:{display:'flex',gap:'16px'}},
+            h('div',{style:{width:'56px',height:'56px',borderRadius:'50%',background:d.color,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:'700',flexShrink:0}},d.init),
+            h('div',null,
+              h('div',{style:{fontWeight:'700',fontSize:'15px'}},d.name),
+              h('div',{style:{fontSize:'12px',color:d.color,marginBottom:'8px'}},d.role),
+              h('div',{style:{display:'flex',gap:'6px',flexWrap:'wrap'}},
+                d.skills.map(s=>h('span',{key:s,className:'badge badge-purple',style:{fontSize:'11px'}},s))
+              )
+            )
+          ))
+        )
+      )
+    )
+  );
+}
+
+// COURSES
+function Courses(){
+  const [filter,setFilter]=useState('All');
+  const levels=['All','Beginner','Intermediate','Advanced'];
+  const filtered=filter==='All'?courses:courses.filter(c=>c.level===filter);
+  return h(Fragment,null,
+    h(Topbar,{title:'Learning Modules'}),
+    h('div',{className:'content'},
+      h('div',{style:{display:'flex',gap:'8px',marginBottom:'20px'}},
+        levels.map(l=>h('button',{key:l,onClick:()=>setFilter(l),style:{padding:'7px 16px',borderRadius:'8px',border:'1px solid var(--border)',background:filter===l?'var(--blue)':'#fff',color:filter===l?'#fff':'var(--dark)',cursor:'pointer',fontSize:'13px',fontWeight:'500'}},l))
+      ),
+      h('div',{className:'grid3'},
+        filtered.map(c=>h('div',{key:c.title,className:'course-card'},
+          h('div',{className:'course-thumb',style:{background:c.color}},c.icon),
+          h('div',{className:'course-body'},
+            h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'8px'}},
+              h('span',{className:'badge '+(c.level==='Beginner'?'badge-green':c.level==='Intermediate'?'badge-amber':'badge-red')},c.level),
+              h('span',{style:{fontSize:'12px',color:'var(--muted)'}},c.students+' students')
+            ),
+            h('div',{style:{fontWeight:'700',fontSize:'14px',marginBottom:'6px'}},c.title),
+            h('div',{style:{fontSize:'12px',color:'var(--muted)',marginBottom:'12px'}},c.lessons+' lessons'),
+            h('div',{className:'progress-bg'},h('div',{className:'progress-fill',style:{width:Math.round(Math.random()*40+40)+'%'}})),
+            h('div',{style:{display:'flex',justifyContent:'space-between',marginTop:'12px'}},
+              h('button',{className:'btn btn-primary',style:{padding:'7px 16px',fontSize:'12px'}},'Start Course'),
+              h('button',{style:{padding:'7px 16px',fontSize:'12px',border:'1px solid var(--border)',borderRadius:'8px',background:'#fff',cursor:'pointer'}},'Preview')
+            )
+          )
+        ))
+      )
+    )
+  );
+}
+
+// IDE
+function IDE(){
+  const [code,setCode]=useState('// Welcome to BPMCE Online IDE\n// Write your code below\n\nfunction helloWorld() {\n  console.log("Hello, BPMCE Coding Club!");\n  return "Welcome!";\n}\n\nhelloWorld();');
+  const [output,setOutput]=useState('');
+  const run=()=>{
+    try{
+      const logs=[];
+      const origLog=console.log;
+      console.log=(...args)=>logs.push(args.join(' '));
+      eval(code);
+      console.log=origLog;
+      setOutput(logs.join('\n')||'Code executed successfully.');
+    }catch(e){setOutput('Error: '+e.message);}
+  };
+  return h(Fragment,null,
+    h(Topbar,{title:'Online IDE'}),
+    h('div',{className:'content'},
+      h('div',{style:{display:'flex',gap:'8px',marginBottom:'16px'}},
+        ['JavaScript','Python','C++','Java'].map(l=>h('button',{key:l,style:{padding:'6px 14px',borderRadius:'6px',border:'1px solid var(--border)',background:l==='JavaScript'?'var(--blue)':'#fff',color:l==='JavaScript'?'#fff':'var(--dark)',cursor:'pointer',fontSize:'13px'}},l))
+      ),
+      h('div',{className:'card',style:{padding:0,overflow:'hidden'}},
+        h('div',{className:'ide-header'},
+          h('div',{className:'ide-dot',style:{background:'#ff5f57'}}),
+          h('div',{className:'ide-dot',style:{background:'#febb2c'}}),
+          h('div',{className:'ide-dot',style:{background:'#2ac840'}}),
+          h('span',{style:{marginLeft:'8px',fontSize:'12px',color:'#94a3b8'}},'main.js — BPMCE IDE')
+        ),
+        h('textarea',{
+          value:code,
+          onChange:e=>setCode(e.target.value),
+          style:{width:'100%',minHeight:'280px',background:'#0f172a',color:'#e2e8f0',border:'none',padding:'16px',fontFamily:'monospace',fontSize:'13px',lineHeight:'1.6',resize:'vertical',outline:'none'}
+        }),
+        h('div',{style:{background:'#1e293b',padding:'10px 16px',display:'flex',gap:'8px'}},
+          h('button',{className:'btn btn-primary',style:{padding:'7px 20px',fontSize:'13px'},onClick:run},'▶ Run'),
+          h('button',{style:{padding:'7px 20px',fontSize:'13px',border:'1px solid #334155',borderRadius:'8px',background:'transparent',color:'#94a3b8',cursor:'pointer'},onClick:()=>setOutput('')},'Clear')
+        )
+      ),
+      output&&h('div',{className:'card',style:{marginTop:'12px'}},
+        h('div',{style:{fontSize:'12px',fontWeight:'600',color:'var(--muted)',marginBottom:'8px'}},'OUTPUT'),
+        h('div',{style:{fontFamily:'monospace',fontSize:'13px',color:'#10b981',background:'#f0fdf4',padding:'12px',borderRadius:'8px'}},output)
+      )
+    )
+  );
+}
+
+// ANTI-CHEAT
+function AntiCheat(){
+  const submissions=[
+    {id:'S001',student:'Rahul Kumar',problem:'Two Sum',similarity:94,status:'Flagged',time:'10:23 AM'},
+    {id:'S002',student:'Sneha Patel',problem:'Binary Search',similarity:12,status:'Clean',time:'10:45 AM'},
+    {id:'S003',student:'Amit Sharma',problem:'Linked List',similarity:88,status:'Flagged',time:'11:02 AM'},
+    {id:'S004',student:'Deepak Jha',problem:'Sorting Array',similarity:5,status:'Clean',time:'11:15 AM'},
+    {id:'S005',student:'Priya Singh',problem:'Tree Traversal',similarity:67,status:'Review',time:'11:30 AM'},
+  ];
+  return h(Fragment,null,
+    h(Topbar,{title:'Anti-Cheat Dashboard'}),
+    h('div',{className:'content'},
+      h('div',{className:'grid4',style:{marginBottom:'20px'}},
+        h('div',{className:'stat-card'},h('div',{className:'stat-num',style:{color:'#dc2626'}},'3'),h('div',{className:'stat-label'},'Flagged Today')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num',style:{color:'#f59e0b'}},'2'),h('div',{className:'stat-label'},'Under Review')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num',style:{color:'#10b981'}},'47'),h('div',{className:'stat-label'},'Clean Submissions')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'94%'),h('div',{className:'stat-label'},'Max Similarity'))
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'section-title'},'Submission Analysis'),
+        h('table',null,
+          h('thead',null,h('tr',null,
+            ['ID','Student','Problem','Similarity','Status','Time','Action'].map(col=>h('th',{key:col},col))
+          )),
+          h('tbody',null,submissions.map(s=>h('tr',{key:s.id},
+            h('td',null,h('code',{style:{background:'#f1f5f9',padding:'2px 6px',borderRadius:'4px',fontSize:'12px'}},s.id)),
+            h('td',{style:{fontWeight:'500'}},s.student),
+            h('td',null,s.problem),
+            h('td',null,
+              h('div',{style:{display:'flex',alignItems:'center',gap:'8px'}},
+                h('div',{style:{width:'60px',background:'#e2e8f0',borderRadius:'4px',height:'6px'}},
+                  h('div',{style:{width:s.similarity+'%',background:s.similarity>80?'#dc2626':s.similarity>60?'#f59e0b':'#10b981',height:'6px',borderRadius:'4px'}})
+                ),
+                h('span',{style:{fontSize:'12px',fontWeight:'600',color:s.similarity>80?'#dc2626':s.similarity>60?'#f59e0b':'#10b981'}},s.similarity+'%')
+              )
+            ),
+            h('td',null,h('span',{className:'badge '+(s.status==='Flagged'?'badge-red':s.status==='Review'?'badge-amber':'badge-green')},s.status)),
+            h('td',{style:{color:'var(--muted)',fontSize:'12px'}},s.time),
+            h('td',null,h('button',{style:{padding:'4px 10px',fontSize:'12px',border:'1px solid var(--border)',borderRadius:'6px',background:'#fff',cursor:'pointer'}},'View'))
+          )))
+        )
+      )
+    )
+  );
+}
+
+// EVENTS
+function Events(){
+  return h(Fragment,null,
+    h(Topbar,{title:'Events'}),
+    h('div',{className:'content'},
+      h('div',{style:{display:'flex',gap:'8px',marginBottom:'20px'}},
+        ['All','Hackathon','Workshop','Seminar','Bootcamp'].map(t=>h('button',{key:t,style:{padding:'6px 14px',borderRadius:'8px',border:'1px solid var(--border)',background:'#fff',cursor:'pointer',fontSize:'13px'}},t))
+      ),
+      events.map(e=>h('div',{key:e.title,className:'event-card',style:{marginBottom:'12px'}},
+        h('div',{className:'event-date'},
+          h('div',{className:'event-day'},e.day),
+          h('div',{className:'event-month'},e.month)
+        ),
+        h('div',{style:{flex:1}},
+          h('div',{style:{display:'flex',alignItems:'center',gap:'8px',marginBottom:'6px'}},
+            h('div',{style:{fontWeight:'700',fontSize:'15px'}},e.title),
+            h('span',{className:'badge badge-blue'},e.type)
+          ),
+          h('div',{style:{fontSize:'13px',color:'var(--muted)',lineHeight:'1.5'}},e.desc)
+        ),
+        h('button',{className:'btn btn-primary',style:{padding:'8px 18px',fontSize:'13px',flexShrink:0}},'Register')
+      ))
+    )
+  );
+}
+
+// LEADERBOARD
+function Leaderboard(){
+  const medals=['🥇','🥈','🥉'];
+  return h(Fragment,null,
+    h(Topbar,{title:'Leaderboard'}),
+    h('div',{className:'content'},
+      h('div',{className:'grid3',style:{marginBottom:'20px'}},
+        leaders.slice(0,3).map((l,i)=>h('div',{key:l.name,className:'card',style:{textAlign:'center',background:i===0?'linear-gradient(135deg,#fef3c7,#fde68a)':'#fff'}},
+          h('div',{style:{fontSize:'36px',marginBottom:'8px'}},medals[i]),
+          h('div',{style:{fontWeight:'700',fontSize:'15px'}},l.name),
+          h('div',{style:{fontSize:'12px',color:'var(--muted)',marginTop:'4px'}},'Rank #'+l.rank),
+          h('div',{style:{fontSize:'22px',fontWeight:'700',color:'var(--blue)',marginTop:'8px'}},l.pts),
+          h('div',{style:{fontSize:'12px',color:'var(--muted)'}},'points')
+        ))
+      ),
+      h('div',{className:'card'},
+        h('table',null,
+          h('thead',null,h('tr',null,['Rank','Student','Points','Solved','Streak','Badge'].map(c=>h('th',{key:c},c)))),
+          h('tbody',null,leaders.map(l=>h('tr',{key:l.name},
+            h('td',{style:{fontWeight:'700',color:l.rank<=3?'var(--blue)':'var(--muted)'}},l.rank<=3?medals[l.rank-1]:l.rank),
+            h('td',{style:{fontWeight:'600'}},l.name),
+            h('td',null,h('span',{style:{fontWeight:'700',color:'var(--blue)'}},l.pts)),
+            h('td',null,l.solved),
+            h('td',null,h('span',{style:{color:'#f59e0b'}},l.streak+' 🔥')),
+            h('td',null,l.badge?h('span',{className:'badge '+(l.badge==='Gold'?'badge-amber':l.badge==='Silver'?'badge-purple':'badge-green')},l.badge):'-')
+          )))
+        )
+      )
+    )
+  );
+}
+
+// RESOURCES
+function Resources(){
+  return h(Fragment,null,
+    h(Topbar,{title:'Resources'}),
+    h('div',{className:'content'},
+      h('div',{className:'card',style:{background:'var(--grad)',border:'none',marginBottom:'20px'}},
+        h('div',{style:{color:'#fff'}},
+          h('div',{style:{fontSize:'18px',fontWeight:'700',marginBottom:'6px'}},'Resource Library'),
+          h('p',{style:{fontSize:'13px',opacity:0.85}},'Curated materials for your learning journey. All free for BPMCE members.')
+        )
+      ),
+      h('div',{className:'grid3'},
+        resources.map(r=>h('div',{key:r.title,className:'resource-card'},
+          h('div',{className:'resource-icon'},r.icon),
+          h('div',{style:{fontWeight:'700',fontSize:'14px',marginBottom:'6px'}},r.title),
+          h('div',{style:{fontSize:'12px',color:'var(--muted)',marginBottom:'10px',lineHeight:'1.5'}},r.desc),
+          h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center'}},
+            h('span',{className:'badge badge-blue'},r.count),
+            h('button',{className:'btn btn-primary',style:{padding:'6px 14px',fontSize:'12px'}},'Browse')
+          )
+        ))
+      )
+    )
+  );
+}
+
+// ADMIN
+function Admin(){
+  const bars=[65,80,45,90,70,55,88,75];
+  return h(Fragment,null,
+    h(Topbar,{title:'Admin Dashboard'}),
+    h('div',{className:'content'},
+      h('div',{className:'grid4',style:{marginBottom:'20px'}},
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'342'),h('div',{className:'stat-label'},'Total Members'),h('div',{className:'stat-change'},'↑ 23 this week')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'28'),h('div',{className:'stat-label'},'Total Events'),h('div',{className:'stat-change'},'5 upcoming')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'6'),h('div',{className:'stat-label'},'Courses'),h('div',{className:'stat-change'},'2 in progress')),
+        h('div',{className:'stat-card'},h('div',{className:'stat-num'},'94%'),h('div',{className:'stat-label'},'Attendance Rate'),h('div',{className:'stat-change'},'↑ 3% from last month'))
+      ),
+      h('div',{className:'grid2'},
+        h('div',{className:'card'},
+          h('div',{className:'section-title'},'Weekly Activity'),
+          h('div',{className:'bar-chart'},
+            bars.map((b,i)=>h('div',{key:i,className:'bar',style:{height:b+'%'},title:b+'%'})),
+          ),
+          h('div',{style:{display:'flex',justifyContent:'space-between',marginTop:'8px'}},
+            ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].slice(0,bars.length).map(d=>h('div',{key:d,style:{fontSize:'11px',color:'var(--muted)',flex:1,textAlign:'center'}},d))
+          )
+        ),
+        h('div',{className:'card'},
+          h('div',{className:'section-title'},'Quick Actions'),
+          h('div',{style:{display:'flex',flexDirection:'column',gap:'10px'}},
+            [
+              {label:'Add New Member',icon:'👤',color:'badge-blue'},
+              {label:'Create Event',icon:'📅',color:'badge-green'},
+              {label:'Upload Resource',icon:'📦',color:'badge-purple'},
+              {label:'Post Announcement',icon:'📢',color:'badge-amber'},
+              {label:'Export Reports',icon:'📊',color:'badge-red'},
+            ].map(a=>h('button',{key:a.label,style:{display:'flex',alignItems:'center',gap:'12px',padding:'10px 14px',border:'1px solid var(--border)',borderRadius:'8px',background:'#fff',cursor:'pointer',fontSize:'13px',fontWeight:'500',textAlign:'left'}},
+              h('span',null,a.icon),
+              a.label
+            ))
+          )
+        )
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'section-title'},'Recent Members'),
+        h('table',null,
+          h('thead',null,h('tr',null,['Name','Email','Joined','Status','Role'].map(c=>h('th',{key:c},c)))),
+          h('tbody',null,[
+            {name:'Ravi Kumar',email:'ravi@bpmce.edu',joined:'May 1, 2025',status:'Active',role:'Member'},
+            {name:'Anjali Singh',email:'anjali@bpmce.edu',joined:'Apr 28, 2025',status:'Active',role:'Member'},
+            {name:'Vikram Yadav',email:'vikram@bpmce.edu',joined:'Apr 25, 2025',status:'Inactive',role:'Member'},
+          ].map(m=>h('tr',{key:m.name},
+            h('td',{style:{fontWeight:'600'}},m.name),
+            h('td',{style:{color:'var(--muted)',fontSize:'12px'}},m.email),
+            h('td',{style:{fontSize:'12px'}},m.joined),
+            h('td',null,h('span',{className:'badge '+(m.status==='Active'?'badge-green':'badge-red')},m.status)),
+            h('td',null,h('span',{className:'badge badge-blue'},m.role))
+          )))
+        )
+      )
+    )
+  );
+}
+
+// CONTACT
+function Contact(){
+  const [form,setForm]=useState({name:'',email:'',subject:'',message:''});
+  const [sent,setSent]=useState(false);
+  return h(Fragment,null,
+    h(Topbar,{title:'Contact Us'}),
+    h('div',{className:'content'},
+      h('div',{className:'grid2'},
+        h('div',null,
+          h('div',{className:'card',style:{marginBottom:'16px'}},
+            h('div',{className:'section-title'},'Get in Touch'),
+            h('p',{style:{fontSize:'13px',color:'var(--muted)',lineHeight:'1.7',marginBottom:'20px'}},'Have questions about the club? Want to join or collaborate? Reach out to us.'),
+            [
+              {icon:'📍',label:'Address',val:'BPMCE, Madhepura, Bihar — 852113'},
+              {icon:'📧',label:'Email',val:'codingclub@bpmce.edu.in'},
+              {icon:'👨‍🏫',label:'Faculty Coord.',val:'Asst. Prof. Sujeet Kumar'},
+              {icon:'🌐',label:'Website',val:'www.bpmce.edu.in'},
+            ].map(c=>h('div',{key:c.label,style:{display:'flex',gap:'12px',alignItems:'flex-start',marginBottom:'14px'}},
+              h('div',{style:{fontSize:'18px',marginTop:'2px'}},c.icon),
+              h('div',null,
+                h('div',{style:{fontSize:'12px',color:'var(--muted)',fontWeight:'600'}},c.label),
+                h('div',{style:{fontSize:'13px',marginTop:'2px'}},c.val)
+              )
+            ))
+          )
+        ),
+        h('div',{className:'card'},
+          sent
+            ? h('div',{style:{textAlign:'center',padding:'40px 0'}},
+                h('div',{style:{fontSize:'48px',marginBottom:'16px'}},'✅'),
+                h('div',{style:{fontWeight:'700',fontSize:'16px',marginBottom:'8px'}},'Message Sent!'),
+                h('div',{style:{fontSize:'13px',color:'var(--muted)'}},"We'll get back to you within 24 hours."),
+                h('button',{className:'btn btn-primary',style:{marginTop:'16px'},onClick:()=>setSent(false)},'Send Another')
+              )
+            : h('div',null,
+                h('div',{className:'section-title'},'Send a Message'),
+                [
+                  {key:'name',label:'Full Name',type:'text',placeholder:'Your name'},
+                  {key:'email',label:'Email',type:'email',placeholder:'your@email.com'},
+                  {key:'subject',label:'Subject',type:'text',placeholder:'What is this about?'},
+                ].map(f=>h('div',{key:f.key,style:{marginBottom:'14px'}},
+                  h('label',{style:{fontSize:'12px',fontWeight:'600',color:'var(--muted)',display:'block',marginBottom:'6px'}},f.label),
+                  h('input',{type:f.type,placeholder:f.placeholder,value:form[f.key],onChange:e=>setForm({...form,[f.key]:e.target.value}),style:{width:'100%',padding:'9px 12px',border:'1px solid var(--border)',borderRadius:'8px',fontSize:'13px',outline:'none'}})
+                )),
+                h('div',{style:{marginBottom:'14px'}},
+                  h('label',{style:{fontSize:'12px',fontWeight:'600',color:'var(--muted)',display:'block',marginBottom:'6px'}},'Message'),
+                  h('textarea',{placeholder:'Write your message...',value:form.message,onChange:e=>setForm({...form,message:e.target.value}),rows:4,style:{width:'100%',padding:'9px 12px',border:'1px solid var(--border)',borderRadius:'8px',fontSize:'13px',resize:'vertical',outline:'none'}})
+                ),
+                h('button',{className:'btn btn-primary',style:{width:'100%',padding:'11px'},onClick:()=>setSent(true)},'Send Message →')
+              )
+        )
+      )
+    )
+  );
+}
+
+const PAGE_MAP={home:Home,about:About,courses:Courses,ide:IDE,anticheat:AntiCheat,events:Events,leaderboard:Leaderboard,resources:Resources,admin:Admin,contact:Contact};
+
+function App(){
+  const [page,setPage]=useState('home');
+  const Page=PAGE_MAP[page]||Home;
+  return h('div',{className:'app'},
+    h(Sidebar,{page,setPage}),
+    h('div',{className:'main'},h(Page,{setPage}))
+  );
+}
+
+ReactDOM.render(h(App,null),document.getElementById('root'));
+</script>
+</body>
+</html>
